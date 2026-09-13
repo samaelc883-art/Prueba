@@ -1,4 +1,4 @@
--- Chinox109 Mobile V1
+-- Chinox109 Mobile V1 (Blue Edition)
 if getgenv().Chinox109LastLoad then
     if os.clock() - getgenv().Chinox109LastLoad < 5 then
         return 
@@ -43,17 +43,19 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.IgnoreGuiInset = true
 gui.Parent = guiContainer
 
+-- Paleta de Colores Azul Medio Oscuro
 local C = {
-    bg       = Color3.fromRGB(8, 8, 8),
-    bg2      = Color3.fromRGB(12, 12, 12),
-    surface  = Color3.fromRGB(16, 16, 16),
-    surface2 = Color3.fromRGB(22, 22, 22),
-    surface3 = Color3.fromRGB(28, 28, 28),
-    border   = Color3.fromRGB(38, 38, 38),
-    borderL  = Color3.fromRGB(55, 55, 55),
-    muted    = Color3.fromRGB(110, 110, 110),
-    dim      = Color3.fromRGB(70, 70, 70),
-    white    = Color3.fromRGB(235, 235, 235),
+    bg       = Color3.fromRGB(10, 16, 26),      -- Azul muy oscuro de fondo
+    bg2      = Color3.fromRGB(14, 22, 36),      -- Azul fondo secundario
+    surface  = Color3.fromRGB(18, 28, 45),      -- Azul para paneles y header
+    surface2 = Color3.fromRGB(24, 38, 60),      -- Azul para contenedores e inputs
+    surface3 = Color3.fromRGB(32, 50, 78),      -- Azul para elementos hover/activos
+    border   = Color3.fromRGB(42, 70, 108),     -- Borde azul medio
+    borderL  = Color3.fromRGB(60, 95, 145),     -- Borde claro
+    muted    = Color3.fromRGB(130, 165, 205),    -- Texto secundario
+    dim      = Color3.fromRGB(85, 120, 160),     -- Texto deshabilitado
+    accent   = Color3.fromRGB(0, 140, 255),     -- Azul neón / acento
+    white    = Color3.fromRGB(235, 243, 255),    -- Texto principal casi blanco
     pure     = Color3.fromRGB(255, 255, 255),
 }
 
@@ -93,15 +95,10 @@ local function pad(p, l, t, r, b)
     return u
 end
 
-local function hasGroupTransparency(inst)
-    local ok, v = pcall(function() return inst.GroupTransparency end)
-    return ok and v ~= nil
-end
-
 local function btnFx(btn, hoverCol, pressCol)
     local base = btn.BackgroundColor3
-    local hc = hoverCol or Color3.fromRGB(32, 32, 32)
-    local pc = pressCol or Color3.fromRGB(18, 18, 18)
+    local hc = hoverCol or Color3.fromRGB(32, 52, 82)
+    local pc = pressCol or Color3.fromRGB(16, 26, 42)
     btn.MouseEnter:Connect(function()
         TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = hc}):Play()
     end)
@@ -138,18 +135,38 @@ local function dragWindow(win, bar)
     end)
 end
 
-local SVG_EDITOR = "??"
-local SVG_DATABASE = "???"
-local SVG_PRESETS = "??"
-local SVG_SETTINGS = "??"
-local SVG_ABOUT = "??"
-local SVG_APPLY = "??"
-local SVG_PASTE = "??"
-local SVG_REJOIN = "??"
-local SVG_ANDROID = "??"
-local SVG_IOS = "??"
-
 local PRESETS = {
+    {
+        name = "roblox old",
+        desc = "Classic menu and legacy interface flags",
+        flags = {
+            ["FFlagEnableInGameMenuModernChat"] = "False",
+            ["FFlagEnableInGameMenuModernEmotes"] = "False",
+            ["FFlagEnableInGameMenuModernReport"] = "False",
+            ["FFlagEnableInGameMenuModernSettings"] = "False",
+            ["FFlagEnableModernSettingsUI"] = "False",
+            ["FFlagUseNewV3Menu"] = "True",
+            ["FFlagEnableNewProfileMenu"] = "False",
+            ["FFlagVoiceChatNewUI"] = "False",
+            ["FFlagEnableModernVoiceChatBubble"] = "False",
+            ["FFlagEnableInGameMenuChromeABTest2"] = "False",
+            ["FFlagEnableInGameMenuChromeCustomization"] = "False",
+            ["FFlagEnableInGameMenuChrome"] = "False",
+            ["FFlagEnableNewInGameMenu"] = "False",
+            ["FIntInGameMenuV2CustomizationVersion"] = "0",
+            ["FFlagEnableInGameMenuModernHelp"] = "False",
+        }
+    },
+    {
+        name = "Flying Head",
+        desc = "Flying head physics configuration",
+        flags = {
+            ["DebugHumanoidNewPhysicsEnabled"] = "false",
+            ["NonSolidFloorPercentForceApplication"] = "-5000",
+            ["SolidFloorPercentForceApplication"] = "-1000",
+            ["SimDefaultFluidForceEnabled"] = "12",
+        }
+    },
     {
         name = "FPS Boost",
         desc = "General performance optimization flags",
@@ -347,11 +364,6 @@ local PRESETS = {
             ["DFIntGraphicsOptimizationModeFRMFrameRateTarget"] = "165",
         }
     },
-    {
-        name = "letras + skybox",
-        desc = "Preset de letras + skybox",
-        flags = {}
-    },
 }
 
 local function parseFlags(text)
@@ -394,7 +406,6 @@ local function formatJson(flags)
     return "{\n" .. table.concat(parts, ",\n") .. "\n}"
 end
 
--- Save/Load Utils
 local SAVE_FILE = "Chinox109_SavedFlags.json"
 local function saveEditorData(text)
     if writefile then pcall(function() writefile(SAVE_FILE, text) end) end
@@ -407,10 +418,10 @@ local function loadEditorData()
     return ""
 end
 
--- Injection Blocker (full-screen neon bar)
+-- Injection Blocker
 local injectionBlocker = Instance.new("Frame")
 injectionBlocker.Size = UDim2.new(1, 0, 1, 0)
-injectionBlocker.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+injectionBlocker.BackgroundColor3 = Color3.fromRGB(6, 10, 18)
 injectionBlocker.BackgroundTransparency = 0.05
 injectionBlocker.ZIndex = 10000
 injectionBlocker.Visible = false
@@ -423,7 +434,7 @@ blockerTitle.Size = UDim2.new(1, -40, 0, 38)
 blockerTitle.Position = UDim2.new(0, 20, 0.5, -58)
 blockerTitle.BackgroundTransparency = 1
 blockerTitle.Text = "Applying FFlags..."
-blockerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+blockerTitle.TextColor3 = C.white
 blockerTitle.Font = Enum.Font.GothamBold
 blockerTitle.TextSize = 18
 blockerTitle.TextXAlignment = Enum.TextXAlignment.Center
@@ -435,7 +446,7 @@ blockerProgress.Size = UDim2.new(1, -40, 0, 28)
 blockerProgress.Position = UDim2.new(0, 20, 0.5, -16)
 blockerProgress.BackgroundTransparency = 1
 blockerProgress.Text = "0 / 0"
-blockerProgress.TextColor3 = Color3.fromRGB(180, 180, 180)
+blockerProgress.TextColor3 = C.muted
 blockerProgress.Font = Enum.Font.Gotham
 blockerProgress.TextSize = 14
 blockerProgress.TextXAlignment = Enum.TextXAlignment.Center
@@ -445,7 +456,7 @@ blockerProgress.Parent = injectionBlocker
 local neonBarBG = Instance.new("Frame")
 neonBarBG.Size = UDim2.new(0.82, 0, 0, 10)
 neonBarBG.Position = UDim2.new(0.09, 0, 0.5, 22)
-neonBarBG.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+neonBarBG.BackgroundColor3 = Color3.fromRGB(15, 25, 42)
 neonBarBG.BorderSizePixel = 0
 neonBarBG.ZIndex = 10001
 neonBarBG.Parent = injectionBlocker
@@ -453,7 +464,7 @@ Instance.new("UICorner", neonBarBG).CornerRadius = UDim.new(0, 5)
 
 local neonBar = Instance.new("Frame")
 neonBar.Size = UDim2.new(0, 0, 1, 0)
-neonBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+neonBar.BackgroundColor3 = C.accent
 neonBar.BorderSizePixel = 0
 neonBar.ZIndex = 10002
 neonBar.Parent = neonBarBG
@@ -461,9 +472,9 @@ Instance.new("UICorner", neonBar).CornerRadius = UDim.new(0, 5)
 
 local neonGrad = Instance.new("UIGradient")
 neonGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
-    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 200)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 190, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200))
 })
 neonGrad.Parent = neonBar
 
@@ -497,20 +508,20 @@ local function changeFlagValue(name, value)
     if valStr == "true"  then valStr = "True"  end
     if valStr == "false" then valStr = "False" end
 
-    local ok1, err1 = pcall(setfflag_func, name, valStr)
+    local ok1 = pcall(setfflag_func, name, valStr)
     if ok1 then return true end
 
-    local ok2, err2 = pcall(setfflag_func, name, value)
+    local ok2 = pcall(setfflag_func, name, value)
     if ok2 then return true end
 
     for _, p in ipairs(FLAG_PREFIXES) do
         if name:sub(1, #p):lower() == p:lower() then
             local stripped = name:sub(#p + 1)
             if stripped ~= "" then
-                local ok3, err3 = pcall(setfflag_func, stripped, valStr)
+                local ok3 = pcall(setfflag_func, stripped, valStr)
                 if ok3 then return true end
 
-                local ok4, err4 = pcall(setfflag_func, stripped, value)
+                local ok4 = pcall(setfflag_func, stripped, value)
                 if ok4 then return true end
             end
             break
@@ -524,7 +535,7 @@ local function applyFlagsInBatches(flagTable, onDone)
     local keys = {}
     local failedFlags = {}
 
-    for k, v in pairs(flagTable) do
+    for k in pairs(flagTable) do
         total = total + 1
         keys[total] = k
     end
@@ -677,7 +688,6 @@ task.delay(2, function()
     end)
 end)
 
-local notificationsEnabled = true
 local settingsState = {
     notifications = true,
     autoRejoin = false,
@@ -709,20 +719,20 @@ local function buildNotifContainer(parent)
     return nc
 end
 
-toast = function(text, kind)
+toast = function(text)
     if not settingsState.notifications then return end
     local nc = mainNotifContainer
     if not nc or not nc.Parent then return end
 
     local t = Instance.new("CanvasGroup")
     t.Size = UDim2.fromOffset(260, 0)
-    t.BackgroundColor3 = Color3.fromRGB(14, 14, 14)
+    t.BackgroundColor3 = C.surface
     t.GroupTransparency = 1
     t.BorderSizePixel = 0
     t.ZIndex = 9900
     t.Parent = nc
     rounded(t, 8)
-    stroke(t, Color3.fromRGB(40, 40, 40), 1, 0)
+    stroke(t, C.border, 1, 0)
 
     local icon = Instance.new("ImageLabel")
     icon.Size = UDim2.fromOffset(26, 26)
@@ -777,7 +787,7 @@ end
 local frame = Instance.new("Frame")
 frame.Name = "Chinox109Window"
 frame.Size = UDim2.new(1, 0, 1, 0) 
-frame.Position =  UDim2.new(0, 0, 0, 0)
+frame.Position = UDim2.new(0, 0, 0, 0)
 frame.BackgroundColor3 = C.bg
 frame.BorderSizePixel = 0
 frame.ClipsDescendants = false
@@ -793,25 +803,6 @@ frameClip.BackgroundTransparency = 1
 frameClip.ZIndex = 100
 frameClip.Parent = frame
 rounded(frameClip, 14)
-
-local function buildNotifContainer(parent)
-    local nc = Instance.new("Frame")
-    nc.Size = UDim2.new(0, 260, 1, -100)
-    nc.Position = UDim2.new(1, -270, 0, 50)
-    nc.BackgroundTransparency = 1
-    nc.ZIndex = 9800
-    nc.ClipsDescendants = false
-    nc.Parent = parent
-
-    local layout = Instance.new("UIListLayout")
-    layout.FillDirection = Enum.FillDirection.Vertical
-    layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Padding = UDim.new(0, 6)
-    layout.Parent = nc
-
-    return nc
-end
 
 mainNotifContainer = buildNotifContainer(gui)
 
@@ -855,7 +846,7 @@ logoLabel.ZIndex = 210
 logoLabel.Parent = logoHolder
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(0, 150, 1, 0)
+title.Size = UDim2.new(0, 180, 1, 0)
 title.Position = UDim2.new(0, 52, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "Chinox109 Mobile"
@@ -884,11 +875,11 @@ local function makeWindowBtn(symbol, xOff, hoverCol)
     return b
 end
 
-local closeBtn = makeWindowBtn("X", -42, Color3.fromRGB(220, 40, 40))
+local closeBtn = makeWindowBtn("X", -42, Color3.fromRGB(180, 40, 60))
 closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-local maximizeBtn = makeWindowBtn("[ ]", -76, Color3.fromRGB(70, 70, 70))
+local maximizeBtn = makeWindowBtn("[ ]", -76, Color3.fromRGB(35, 60, 95))
 maximizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-local minimizeBtn = makeWindowBtn("-", -110, Color3.fromRGB(70, 70, 70))
+local minimizeBtn = makeWindowBtn("-", -110, Color3.fromRGB(35, 60, 95))
 minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 dragWindow(frame, header)
@@ -967,7 +958,7 @@ local function switchSection(id)
         if btn then
             local ico = btn:FindFirstChildOfClass("TextLabel")
             if nav.id == id then
-                TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(28, 28, 28)}):Play()
+                TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = C.surface3}):Play()
                 if ico then TweenService:Create(ico, TweenInfo.new(0.15), {TextColor3 = C.white}):Play() end
             else
                 TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = C.surface}):Play()
@@ -1019,8 +1010,8 @@ for i, nav in ipairs(NAV_ITEMS) do
 
     btn.MouseEnter:Connect(function()
         if activeSection ~= nav.id then
-            TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(24, 24, 24)}):Play()
-            TweenService:Create(ico, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+            TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = C.surface2}):Play()
+            TweenService:Create(ico, TweenInfo.new(0.15), {TextColor3 = C.muted}):Play()
         end
     end)
     btn.MouseLeave:Connect(function()
@@ -1043,7 +1034,7 @@ local function sectionLabel(parent, text, yOff)
     l.Position = UDim2.new(0, PAD, 0, yOff)
     l.BackgroundTransparency = 1
     l.Text = text
-    l.TextColor3 = C.dim
+    l.TextColor3 = C.muted
     l.TextXAlignment = Enum.TextXAlignment.Left
     l.Font = Enum.Font.GothamBold
     l.TextSize = 13
@@ -1101,7 +1092,7 @@ local function actionBtn(parent, text, sym, x, y, w, h, primary)
     local b = Instance.new("TextButton")
     b.Size = UDim2.fromOffset(w, h)
     b.Position = UDim2.fromOffset(x, y)
-    b.BackgroundColor3 = primary and C.white or C.surface2
+    b.BackgroundColor3 = primary and C.accent or C.surface2
     b.Text = ""
     b.AutoButtonColor = false
     b.BorderSizePixel = 0
@@ -1110,9 +1101,9 @@ local function actionBtn(parent, text, sym, x, y, w, h, primary)
     rounded(b, 8)
     if not primary then
         stroke(b, C.border, 1, 0)
-        btnFx(b, Color3.fromRGB(32, 32, 32))
+        btnFx(b, C.surface3)
     else
-        btnFx(b, Color3.fromRGB(200, 200, 200), Color3.fromRGB(160, 160, 160))
+        btnFx(b, Color3.fromRGB(30, 160, 255), Color3.fromRGB(0, 110, 210))
     end
 
     local ic = Instance.new("TextLabel")
@@ -1120,7 +1111,7 @@ local function actionBtn(parent, text, sym, x, y, w, h, primary)
     ic.Position = UDim2.new(0, 12, 0.5, -9)
     ic.BackgroundTransparency = 1
     ic.Text = sym
-    ic.TextColor3 = primary and C.bg or C.white
+    ic.TextColor3 = primary and C.pure or C.white
     ic.Font = Enum.Font.GothamBold
     ic.TextSize = 14
     ic.ZIndex = 146
@@ -1131,7 +1122,7 @@ local function actionBtn(parent, text, sym, x, y, w, h, primary)
     tl.Position = UDim2.new(0, 34, 0, 0)
     tl.BackgroundTransparency = 1
     tl.Text = text
-    tl.TextColor3 = primary and C.bg or C.white
+    tl.TextColor3 = primary and C.pure or C.white
     tl.TextXAlignment = Enum.TextXAlignment.Left
     tl.Font = Enum.Font.GothamBold
     tl.TextSize = 14
@@ -1144,10 +1135,10 @@ end
 local btnAreaY = editorBoxH + 34
 local btnW = math.floor((editorW - PAD * 5) / 4)
 
-local applyBtn, _ = actionBtn(editorSection, "Apply", "▶️", PAD, btnAreaY, btnW, 42, true)
-local pasteBtn, _ = actionBtn(editorSection, "Paste", "📋", PAD + btnW + PAD, btnAreaY, btnW, 42, false)
-local clearBtn, _ = actionBtn(editorSection, "Clear", "🗑️", PAD + btnW * 2 + PAD * 2, btnAreaY, btnW, 42, false)
-local rejoinBtn, _ = actionBtn(editorSection, "Rejoin", "🔄", PAD + btnW * 3 + PAD * 3, btnAreaY, btnW, 42, false)
+local applyBtn = actionBtn(editorSection, "Apply", "▶️", PAD, btnAreaY, btnW, 42, true)
+local pasteBtn = actionBtn(editorSection, "Paste", "📋", PAD + btnW + PAD, btnAreaY, btnW, 42, false)
+local clearBtn = actionBtn(editorSection, "Clear", "🗑️", PAD + btnW * 2 + PAD * 2, btnAreaY, btnW, 42, false)
+local rejoinBtn = actionBtn(editorSection, "Rejoin", "🔄", PAD + btnW * 3 + PAD * 3, btnAreaY, btnW, 42, false)
 
 clearBtn.MouseButton1Click:Connect(function()
     editorBox.Text = ""
@@ -1165,7 +1156,7 @@ applyBtn.MouseButton1Click:Connect(function()
 
     applyBtn.Active = false
     applyBtn.AutoButtonColor = false
-    applyBtn.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    applyBtn.BackgroundColor3 = C.dim
 
     toast("Injecting " .. total .. " FFlags...")
 
@@ -1173,7 +1164,7 @@ applyBtn.MouseButton1Click:Connect(function()
         function(applied, tot)
             toast("Done - " .. applied .. "/" .. tot .. " FFlags applied!")
             applyBtn.Active = true
-            applyBtn.BackgroundColor3 = C.white
+            applyBtn.BackgroundColor3 = C.accent
             startWatchdog()
             if settingsState.autoRejoin then
                 task.delay(1, rejoinGame)
@@ -1231,7 +1222,7 @@ local previewModal = Instance.new("Frame")
 previewModal.Name = "PreviewModal"
 previewModal.Size = UDim2.new(1, -30, 1, -30)
 previewModal.Position = UDim2.new(0, 15, 0, 15)
-previewModal.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+previewModal.BackgroundColor3 = C.bg2
 previewModal.BorderSizePixel = 0
 previewModal.ZIndex = 9000
 previewModal.Visible = false
@@ -1252,7 +1243,7 @@ previewClose.BorderSizePixel = 0
 previewClose.ZIndex = 9001
 previewClose.Parent = previewModal
 rounded(previewClose, 7)
-btnFx(previewClose, Color3.fromRGB(220, 40, 40))
+btnFx(previewClose, Color3.fromRGB(180, 40, 60))
 
 previewClose.MouseButton1Click:Connect(function()
     TweenService:Create(previewModal, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
@@ -1281,7 +1272,7 @@ previewTitle.Parent = previewModal
 local previewScroll = Instance.new("ScrollingFrame")
 previewScroll.Size = UDim2.new(1, -14, 1, -50)
 previewScroll.Position = UDim2.new(0, 7, 0, 44)
-previewScroll.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
+previewScroll.BackgroundColor3 = C.bg
 previewScroll.BorderSizePixel = 0
 previewScroll.ScrollBarThickness = 4
 previewScroll.ScrollBarImageColor3 = C.border
@@ -1294,7 +1285,7 @@ previewText.Size = UDim2.new(1, -16, 0, 9999)
 previewText.Position = UDim2.new(0, 8, 0, 6)
 previewText.BackgroundTransparency = 1
 previewText.Text = ""
-previewText.TextColor3 = Color3.fromRGB(190, 190, 190)
+previewText.TextColor3 = C.muted
 previewText.TextXAlignment = Enum.TextXAlignment.Left
 previewText.TextYAlignment = Enum.TextYAlignment.Top
 previewText.Font = Enum.Font.Code
@@ -1327,17 +1318,18 @@ local totalCardH = 0
 for pidx, preset in ipairs(PRESETS) do
     local card = Instance.new("Frame")
     card.Size = UDim2.new(1, 0, 0, 96)
-    card.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    card.BackgroundColor3 = C.surface
     card.BorderSizePixel = 0
     card.ZIndex = 144
     card.LayoutOrder = pidx
     card.Parent = presetsScroll
     rounded(card, 12)
+    stroke(card, C.border, 1, 0)
     
     local uig = Instance.new("UIGradient")
     uig.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 35)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 15))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 42, 68)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 24, 40))
     })
     uig.Rotation = 45
     uig.Parent = card
@@ -1374,7 +1366,7 @@ for pidx, preset in ipairs(PRESETS) do
     cardDesc.Position = UDim2.new(0, 14, 0, 34)
     cardDesc.BackgroundTransparency = 1
     cardDesc.Text = preset.desc
-    cardDesc.TextColor3 = C.dim
+    cardDesc.TextColor3 = C.muted
     cardDesc.TextXAlignment = Enum.TextXAlignment.Left
     cardDesc.Font = Enum.Font.Gotham
     cardDesc.TextSize = 12
@@ -1384,9 +1376,9 @@ for pidx, preset in ipairs(PRESETS) do
     local addPresetBtn = Instance.new("TextButton")
     addPresetBtn.Size = UDim2.fromOffset(70, 28)
     addPresetBtn.Position = UDim2.new(1, -76, 0, 56)
-    addPresetBtn.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
+    addPresetBtn.BackgroundColor3 = C.accent
     addPresetBtn.Text = "+ Add"
-    addPresetBtn.TextColor3 = Color3.fromRGB(10, 10, 10)
+    addPresetBtn.TextColor3 = C.pure
     addPresetBtn.Font = Enum.Font.GothamBold
     addPresetBtn.TextSize = 14
     addPresetBtn.AutoButtonColor = false
@@ -1394,7 +1386,7 @@ for pidx, preset in ipairs(PRESETS) do
     addPresetBtn.ZIndex = 146
     addPresetBtn.Parent = card
     rounded(addPresetBtn, 7)
-    btnFx(addPresetBtn, Color3.fromRGB(190, 190, 190), Color3.fromRGB(160, 160, 160))
+    btnFx(addPresetBtn, Color3.fromRGB(30, 160, 255), Color3.fromRGB(0, 110, 210))
 
     local previewBtn = Instance.new("TextButton")
     previewBtn.Size = UDim2.fromOffset(68, 28)
@@ -1410,7 +1402,7 @@ for pidx, preset in ipairs(PRESETS) do
     previewBtn.Parent = card
     rounded(previewBtn, 7)
     stroke(previewBtn, C.border, 1, 0)
-    btnFx(previewBtn, Color3.fromRGB(32, 32, 32))
+    btnFx(previewBtn, C.surface3)
 
     local pdata = preset
     addPresetBtn.MouseButton1Click:Connect(function()
@@ -1486,7 +1478,7 @@ local function makeToggleRow(parent, labelText, descText, defaultVal, order, onC
     descLbl.Position = UDim2.new(0, 16, 0, 36)
     descLbl.BackgroundTransparency = 1
     descLbl.Text = descText
-    descLbl.TextColor3 = C.dim
+    descLbl.TextColor3 = C.muted
     descLbl.TextXAlignment = Enum.TextXAlignment.Left
     descLbl.Font = Enum.Font.Gotham
     descLbl.TextSize = 11
@@ -1497,7 +1489,7 @@ local function makeToggleRow(parent, labelText, descText, defaultVal, order, onC
     local trackBg = Instance.new("Frame")
     trackBg.Size = UDim2.fromOffset(trackW, trackH)
     trackBg.Position = UDim2.new(1, -(trackW + 14), 0.5, -trackH / 2)
-    trackBg.BackgroundColor3 = defaultVal and Color3.fromRGB(200, 200, 200) or C.surface3
+    trackBg.BackgroundColor3 = defaultVal and C.accent or C.surface2
     trackBg.BorderSizePixel = 0
     trackBg.ZIndex = 145
     trackBg.Parent = row
@@ -1523,7 +1515,7 @@ local function makeToggleRow(parent, labelText, descText, defaultVal, order, onC
     togBtn.MouseButton1Click:Connect(function()
         togState = not togState
         TweenService:Create(trackBg, TweenInfo.new(0.18), {
-            BackgroundColor3 = togState and Color3.fromRGB(200, 200, 200) or C.surface3
+            BackgroundColor3 = togState and C.accent or C.surface2
         }):Play()
         TweenService:Create(knob, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Position = UDim2.new(togState and 1 or 0, togState and -((trackH - 4) + 2) or 2, 0.5, -(trackH - 4) / 2)
@@ -1561,7 +1553,7 @@ noTexDesc.Size = UDim2.new(1, -160, 0, 14)
 noTexDesc.Position = UDim2.new(0, 14, 0, 30)
 noTexDesc.BackgroundTransparency = 1
 noTexDesc.Text = "No FFlag - Script-based texture removal"
-noTexDesc.TextColor3 = C.dim
+noTexDesc.TextColor3 = C.muted
 noTexDesc.TextXAlignment = Enum.TextXAlignment.Left
 noTexDesc.Font = Enum.Font.Gotham
 noTexDesc.TextSize = 15
@@ -1582,7 +1574,7 @@ noTexRunBtn.ZIndex = 146
 noTexRunBtn.Parent = noTexBtn
 rounded(noTexRunBtn, 7)
 stroke(noTexRunBtn, C.border, 1, 0)
-btnFx(noTexRunBtn, Color3.fromRGB(32, 32, 32))
+btnFx(noTexRunBtn, C.surface3)
 
 noTexRunBtn.MouseButton1Click:Connect(function()
     pcall(function()
@@ -1628,7 +1620,7 @@ local aboutTitle = Instance.new("TextLabel")
 aboutTitle.Size = UDim2.new(1, -28, 0, 24)
 aboutTitle.Position = UDim2.new(0, 14, 0, 14)
 aboutTitle.BackgroundTransparency = 1
-aboutTitle.Text = "Chinox109 Mobile V1"
+aboutTitle.Text = "Chinox109 Mobile V1 (Blue Edition)"
 aboutTitle.TextColor3 = C.white
 aboutTitle.TextXAlignment = Enum.TextXAlignment.Left
 aboutTitle.Font = Enum.Font.GothamBold
@@ -1650,7 +1642,7 @@ aboutDesc.TextWrapped = true
 aboutDesc.ZIndex = 143
 aboutDesc.Parent = aboutCard
 
--- Minimizer Toggle Button Logic
+-- Toggle Button
 local toggleBtn = Instance.new("ImageButton")
 toggleBtn.Name = "Chinox109ToggleBtn"
 toggleBtn.Size = UDim2.fromOffset(45, 45)
